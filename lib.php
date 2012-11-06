@@ -57,49 +57,63 @@ class course_hierarchy implements renderable {
     private function construct_view_tree($tree) {
         // The $tree is an array. This function necessarily converts this into a multidimentional array...
 
-        foreach($tree as $key=>$node) {
-            $courses = $node->get_children();
+        if (class_exists('ual_mis')) {
+            $mis = new ual_mis();
 
-            if(!empty($courses)) {
+            foreach($tree as $key=>$node) {
+                $courses = $node->get_children();
 
-                // Group courses by year...
-                $grouped_course_data = array();
-                foreach ($courses as $course) {
-                    // TODO String functions are horribly inefficient so we might want to take a look at this.
-                    $aos_period = $course->get_aos_period();
+                if(!empty($courses)) {
 
-                    $unique_code = $course->get_unique_code();
+                    // Group courses by year...
+                    $grouped_course_data = array();
+                    foreach ($courses as $course) {
+                        // TODO String functions are horribly inefficient so we might want to take a look at this.
+                        $aos_period = $course->get_aos_period();
 
-                    if(strlen($aos_period) > 1) {
-                        $year = intval(substr($aos_period, -2, 1));
+                        $unique_code = $course->get_unique_code();
 
-                        $grouped_course_data[$unique_code][$year] = $course;
+                        if(strlen($aos_period) > 1) {
+                            $year = intval(substr($aos_period, -2, 1));
+
+                            $grouped_course_data[$unique_code][$year] = $course;
+                        }
                     }
-                }
 
-                if(!empty($grouped_course_data)) {
-                    // We are about to replace this node's children...
-                    $node->abandon_children();
+                    if(!empty($grouped_course_data)) {
+                        // We are about to replace this node's children...
+                        $node->abandon_children();
 
-                    foreach($grouped_course_data as $code=>$years) {
-                        // TODO We need to get the name (and link to Moodle course) from the 'course' table from the UAL api. Just use the name of the first year's homepage for now
-                        $first_year = reset($years);
-                        $coursepage = new ual_course(array('type' => ual_course::COURSETYPE_COURSE, 'shortname' => $first_year->get_shortname(), 'fullname' => $first_year->get_fullname(), 'id' => 0));
+                        foreach($grouped_course_data as $code=>$years) {
+                            // TODO We need to get the name (and link to Moodle course) from the 'course' table from the UAL api. Just use the name of the first year's homepage for now
+                            $first_year = reset($years);
+                            $coursepage = new ual_course(array('type' => ual_course::COURSETYPE_COURSE, 'shortname' => $first_year->get_shortname(), 'fullname' => $first_year->get_fullname(), 'id' => 0));
 
-                        // TODO Courses may only run for 1 year. This would be indicated by the course name as described in the 'course' table.
-                        foreach($years as $year) {
-                            $aos_period = $year->get_aos_period();
-                            if(strlen($aos_period) > 1) {
-                                $year_str = substr($aos_period, -2, 1);
-                            } else {
-                                $year_str = get_string('unknown_year', 'block_ual_mymoodle');
+                            // TODO Courses may only run for 1 year. This would be indicated by the course name as described in the 'course' table.
+                            foreach($years as $year) {
+                                $aos_period = $year->get_aos_period();
+                                if(strlen($aos_period) > 1) {
+                                    $year_str = substr($aos_period, -2, 1);
+                                } else {
+                                    $year_str = get_string('unknown_year', 'block_ual_mymoodle');
+                                }
+
+                                // Use the UAL API to get the description of the year course from the MIS
+                                $year_details = $mis->get_course_details($year->get_shortname());
+
+                                if(!empty($year_details)) {
+                                    $year->set_fullname($year_details['FULL_DESCRIPTION']);
+                                    // TODO The following function needs to be called but at the moment I'm calling set_fullname() repeatedly within this loop...
+                                    $coursepage->set_fullname($year_details['AOS_DESCRIPTION']);
+                                } else {
+                                    $year->set_fullname(get_string('year', 'block_ual_mymoodle').' '.$year_str);
+                                }
+
+                                $coursepage->adopt_child($year);
                             }
 
-                            $year->set_fullname(get_string('year', 'block_ual_mymoodle').' '.$year_str);
-                            $coursepage->adopt_child($year);
+                            $node->adopt_child($coursepage);
                         }
-
-                        $node->adopt_child($coursepage);
                     }
                 }
             }
