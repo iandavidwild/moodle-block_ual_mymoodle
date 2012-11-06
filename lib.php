@@ -82,31 +82,25 @@ class course_hierarchy implements renderable {
                     $node->abandon_children();
 
                     foreach($grouped_course_data as $code=>$years) {
-                        // Give the course page the name of the first year for now...
+                        // TODO We need to get the name (and link to Moodle course) from the 'course' table from the UAL api. Just use the name of the first year's homepage for now
                         $first_year = reset($years);
                         $coursepage = new ual_course(array('type' => ual_course::COURSETYPE_COURSE, 'shortname' => $first_year->get_shortname(), 'fullname' => $first_year->get_fullname(), 'id' => 0));
 
-                        if(count($years) == 1) {
-                            $units = $first_year->get_children();
-                            foreach($units as $unit) {
-                                $coursepage->adopt_child($unit);
+                        // TODO Courses may only run for 1 year. This would be indicated by the course name as described in the 'course' table.
+                        foreach($years as $year) {
+                            $aos_period = $year->get_aos_period();
+                            if(strlen($aos_period) > 1) {
+                                $year_str = substr($aos_period, -2, 1);
+                            } else {
+                                $year_str = get_string('unknown_year', 'block_ual_mymoodle');
                             }
-                        } else {
-                            // TODO We need to get the name (and link to Moodle course) from the course table from the UAL api. Just use the name of the first year's homepage for now
-                            foreach($years as $year) {
-                                $aos_period = $year->get_aos_period();
-                                if(strlen($aos_period) > 1) {
-                                    $year_str = substr($aos_period, -2, 1);
-                                } else {
-                                    $year_str = get_string('unknown_year', 'block_ual_mymoodle');
-                                }
 
-                                $year->set_fullname(get_string('year', 'block_ual_mymoodle').' '.$year_str);
-                                $coursepage->adopt_child($year);
-                            }
+                            $year->set_fullname(get_string('year', 'block_ual_mymoodle').' '.$year_str);
+                            $coursepage->adopt_child($year);
                         }
+
+                        $node->adopt_child($coursepage);
                     }
-                    $node->adopt_child($coursepage);
                 }
             }
         }
