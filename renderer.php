@@ -104,7 +104,7 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
                 if($node_type == ual_course::COURSETYPE_UNIT) {
                     // Create a link...
                     $attributes['title'] = $course_fullname;
-                    $moodle_url = $CFG->wwwroot.'/course/view.php?id='.$node->get_id();
+                    $moodle_url = $CFG->wwwroot.'/course/view.php?id='.$node->get_moodle_course_id();
                     $content = html_writer::link($moodle_url, $course_fullname, $attributes);
 
                 } else {
