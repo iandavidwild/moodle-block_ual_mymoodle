@@ -124,11 +124,16 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
                 $content = html_writer::tag('div', $course_fullname, $attributes);
 
                 if($display_link == true) {
-                    // Create a link
-                    $attributes['title'] = $course_fullname;
-                    $moodle_url = $CFG->wwwroot.'/course/view.php?id='.$node->get_moodle_course_id();
-                    // replace the content...
-                    $content = html_writer::link($moodle_url, $course_fullname, $attributes);
+                    // Create a link if the user is enrolled on the course (which they should be if the enrolment plugin is working as it should).
+                    if($node->get_user_enrolled() == true) {
+                        $attributes['title'] = $course_fullname;
+                        $moodle_url = $CFG->wwwroot.'/course/view.php?id='.$node->get_moodle_course_id();
+                        // replace the content...
+                        $content = html_writer::link($moodle_url, $course_fullname, $attributes);
+                    } else {
+                        // Display the name but it's not clickable...
+                        $content = html_writer::tag('i', $content);
+                    }
                 }
 
                 if($display_heading == true) {
