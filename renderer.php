@@ -216,7 +216,7 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
 
         // Need course object from DB. Note this is a query for every single course in the tree :-(
         // Query for fields the module '_print_overview' functions require (rather than everything)...
-        $sql = "SELECT id, shortname, modinfo, sectioncache, visible
+        $sql = "SELECT id, shortname, modinfo, visible
                 FROM {course} c
                 WHERE c.id='{$courseid}'";
 
