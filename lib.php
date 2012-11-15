@@ -64,6 +64,8 @@ class course_hierarchy implements renderable {
      * @return mixed
      */
     private function construct_view_tree($programmes, $courses, $units) {
+        global $USER;
+
         $result = array();
 
         if (class_exists('ual_mis')) {
@@ -74,6 +76,7 @@ class course_hierarchy implements renderable {
             if(!empty($programmes)) {
                 foreach($programmes as $programme) {
                     $programme_code = $programme->get_aos_code().$programme->get_aos_period().$programme->get_acad_period();
+                    $programme->set_user_enrolled($mis->get_enrolled($USER->id, $programme->get_moodle_course_id()));
                     $reference_programmes[$programme_code] = $programme;
                 }
             }
@@ -85,6 +88,7 @@ class course_hierarchy implements renderable {
             if(!empty($courses)) {
                 foreach($courses as $course) {
                     $course_code = $course->get_aos_code().$course->get_aos_period().$course->get_acad_period();
+                    $course->set_user_enrolled($mis->get_enrolled($USER->id, $course->get_moodle_course_id()));
                     $reference_courses[$course_code] = $course;
 
                     // Is this course an orphan?
@@ -106,6 +110,7 @@ class course_hierarchy implements renderable {
             if(!empty($units)) {
                 foreach($units as $unit) {
                     $unit_code = $unit->get_aos_code().$unit->get_aos_period().$unit->get_acad_period();
+                    $unit->set_user_enrolled($mis->get_enrolled($USER->id, $unit->get_moodle_course_id()));
                     $reference_units[$unit_code] = $unit;
 
                     // Is this unit an orphan?
@@ -136,6 +141,7 @@ class course_hierarchy implements renderable {
                                 $course->set_shortname($orphaned_course->get_shortname());
                                 $course->set_idnumber($orphaned_course->get_idnumber());
                                 $course->set_moodle_course_id($orphaned_course->get_moodle_course_id());
+                                $course->set_user_enrolled($orphaned_course->get_user_enrolled());
                                 unset($orphaned_courses[$elementkey]);
                             }
                         }
@@ -155,7 +161,18 @@ class course_hierarchy implements renderable {
                 $result[] = $reference_programme;
             }
 
-            // Need to do something with orphaned courses and units...
+
+            // Add an array element for each orphaned course...
+            foreach($orphaned_courses as $orphaned_course) {
+                $result[] = $orphaned_course;
+            }
+
+            // Then add an array element for each orphaned unit...
+            foreach($orphaned_units as $orphaned_unit) {
+                $result[] = $orphaned_unit;
+            }
+
+            // Finally record details of orphaned courses and units in case we need to do something with them later...
             $this->orphaned_courses = $orphaned_courses;
             $this->orphaned_units = $orphaned_units;
         }
