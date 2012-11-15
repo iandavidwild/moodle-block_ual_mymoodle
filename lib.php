@@ -181,7 +181,13 @@ class course_hierarchy implements renderable {
                 foreach($grouped_courses as $course_year => $courses) {
 
                     // Make new course for 'Course (all years)' level - this information needs to come from the API but construct it manually for now...
-                    $new_course = new ual_course(array('fullname' => $course_year, 'idnumber' => $course_year));
+                    $new_course = new ual_course(array('fullname' => $course_year, 'idnumber' => $course_year, 'type' => ual_course::COURSETYPE_ALLYEARS));
+                    // Do we need to link to a Moodle course?
+                    $moodle_course = $this->get_moodle_course($course_year);
+                    if($moodle_course) {
+                        $new_course->set_moodle_course_id($moodle_course->id);
+                    }
+
                     foreach($courses as $course) {
                         $new_course->adopt_child($course);
                     }
@@ -192,4 +198,17 @@ class course_hierarchy implements renderable {
 
         return ($result);
     }
+
+    private function get_moodle_course($courseid) {
+        global $DB;
+
+        $select = 'shortname IN (\''.$courseid.'\')';
+
+        // TODO this doesn't need to fetch a recordset as we're only expecting a single record.
+        $moodle_course = $DB->get_record_select('course', $select);
+
+        return $moodle_course;
+    }
+
+
 }
