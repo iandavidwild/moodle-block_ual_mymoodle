@@ -75,9 +75,9 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
      * @return string
      */
     protected function htmllize_tree($tree, $indent=0) {
-        global $CFG;
+        global $CFG, $DB;
 
-        $result = '<ul>';
+        $result = html_writer::start_tag('ul');
 
         if (empty($tree)) {
             $result .= html_writer::tag('li', get_string('nothingtodisplay'));
@@ -86,34 +86,75 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
 
                 $name = $node->get_fullname();
                 if($this->showcode == 1) {
-                    $name .= ' ('.$node->get_shortname().')';
+                    $name .= ' ('.$node->get_idnumber().')';
                 }
                 $course_fullname = $this->trim($name);
                 $node_type = $node->get_type();
+
+                // What id should we include in the rendered HTML?
                 $type_id = '';
+                // Is this a heading (i.e. displayed in bold)?
+                $display_heading = false;
+                // Should we display a link to the course?
+                $display_link = true;
+                // Do we display the events belonging to a course?
+                $display_events = false;
+                // That depends on the type of node...
                 switch($node_type) {
                     case ual_course::COURSETYPE_PROGRAMME:
+                        $display_heading = false;
                         $type_id = 'programme';
+                        break;
+                    case ual_course::COURSETYPE_ALLYEARS:
+                        $type_id = 'course_all_years';
+                        break;
                     case ual_course::COURSETYPE_COURSE:
+                        $display_events = true;
                         $type_id = 'course';
+                        break;
                     case ual_course::COURSETYPE_UNIT:
+                        $display_events = true;
                         $type_id = 'unit';
+                        break;
                 }
-                $attributes = array('id' => $type_id);
 
-                if($node_type == ual_course::COURSETYPE_UNIT) {
-                    // Create a link...
+                // default content is the course name with no other formatting
+                $attributes = array('id' => $type_id);
+                // Construct the content...
+                $content = html_writer::tag('div', $course_fullname, $attributes);
+
+                if($display_link == true) {
+                    // Create a link
                     $attributes['title'] = $course_fullname;
                     $moodle_url = $CFG->wwwroot.'/course/view.php?id='.$node->get_moodle_course_id();
+                    // replace the content...
                     $content = html_writer::link($moodle_url, $course_fullname, $attributes);
+                }
 
-                } else {
-                    // Don't...
-                    $content = html_writer::tag('strong', $course_fullname, $attributes);
+                if($display_heading == true) {
+                    $content = html_writer::tag('strong', $content);
+                }
+
+                if($display_events == true) {
+                    // Get events
+                    $events = $this->print_overview($node->get_moodle_course_id());
+                    if(!empty($events)) {
+                        // Display the events as a nested linked list
+                        $event_list = html_writer::start_tag('ul', array('id' => 'course_events'));
+                        foreach($events as $courseid=>$mod_events) {
+                            if(!empty($mod_events)) {
+                                foreach($mod_events as $mod_type=>$event_html) {
+                                    $event_list .= html_writer::tag('li', $event_html);
+                                }
+                            }
+                        }
+                        $event_list .= html_writer::end_tag('ul');
+
+                        $content .= $event_list;
+                    }
                 }
 
                 $children = $node->get_children();
-
 
                 if ($children == null) {
                     $result .= html_writer::tag('li', $content, $attributes);
@@ -124,7 +165,7 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
                 }
             }
         }
-        $result .= '</ul>';
+        $result .= html_writer::end_tag('ul');
 
         return $result;
     }
@@ -163,6 +204,46 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
                 break;
         }
         return $result;
+    }
+
+    private function print_overview($courseid) {
+        global $DB, $CFG, $USER;
+
+        // Need course object from DB. Note this is a query for every single course in the tree :-(
+        // Query for fields the module '_print_overview' functions require (rather than everything)...
+        $sql = "SELECT id, shortname, modinfo, sectioncache, visible
+                FROM {course} c
+                WHERE c.id='{$courseid}'";
+
+        $courses = $DB->get_records_sql($sql);
+
+        $htmlarray = array();
+
+        if(!empty($courses)) {
+
+            // I know, I know... forum_print_overview needs this information (this code has been copied from 'block_course_overview.php'.
+            foreach ($courses as $c) {
+                if (isset($USER->lastcourseaccess[$c->id])) {
+                    $courses[$c->id]->lastaccess = $USER->lastcourseaccess[$c->id];
+                } else {
+                    $courses[$c->id]->lastaccess = 0;
+                }
+            }
+
+            if ($modules = $DB->get_records('modules')) {
+                foreach ($modules as $mod) {
+                    if (file_exists($CFG->dirroot.'/mod/'.$mod->name.'/lib.php')) {
+                        include_once($CFG->dirroot.'/mod/'.$mod->name.'/lib.php');
+                        $fname = $mod->name.'_print_overview';
+                        if (function_exists($fname)) {
+                            $fname($courses, $htmlarray);
+                        }
+                    }
+                }
+            }
+        }
+
+        return $htmlarray;
     }
 }
 
