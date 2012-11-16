@@ -93,6 +93,8 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
 
                 // What id should we include in the rendered HTML?
                 $type_id = '';
+                // Is this a top level (a.k.a 'primary item') link?
+                $display_top_level = false;
                 // Is this a heading (i.e. displayed in bold)?
                 $display_heading = false;
                 // Should we display a link to the course?
@@ -103,23 +105,23 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
                 switch($node_type) {
                     case ual_course::COURSETYPE_PROGRAMME:
                         $display_heading = false;
-                        $type_id = 'programme';
+                        $type_class = 'programme';
                         break;
                     case ual_course::COURSETYPE_ALLYEARS:
-                        $type_id = 'course_all_years';
+                        $type_class = 'course_all_years';
                         break;
                     case ual_course::COURSETYPE_COURSE:
                         $display_events = true;
-                        $type_id = 'course';
+                        $type_class = 'course';
                         break;
                     case ual_course::COURSETYPE_UNIT:
                         $display_events = true;
-                        $type_id = 'unit';
+                        $type_class = 'unit';
                         break;
                 }
 
                 // default content is the course name with no other formatting
-                $attributes = array('id' => $type_id);
+                $attributes = array('class' => $type_class);
                 // Construct the content...
                 $content = html_writer::tag('div', $course_fullname, $attributes);
 
@@ -138,6 +140,15 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
 
                 if($display_heading == true) {
                     $content = html_writer::tag('strong', $content);
+                }
+
+                // A primary item could be a programme, course or unit
+                if($indent == 0) {
+                    $display_top_level = true;
+                }
+
+                if($display_top_level == true) {
+                    $content = html_writer::tag('h2', $content);
                 }
 
                 if($display_events == true) {
