@@ -75,7 +75,7 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
      * @return string
      */
     protected function htmllize_tree($tree, $indent=0) {
-        global $CFG, $DB;
+        global $CFG;
 
         $result = html_writer::start_tag('ul');
 
@@ -226,10 +226,18 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
         global $DB, $CFG, $USER;
 
         // Need course object from DB. Note this is a query for every single course in the tree :-(
-        // Query for fields the module '_print_overview' functions require (rather than everything)...
-        $sql = "SELECT id, shortname, modinfo, visible
-                FROM {course} c
-                WHERE c.id='{$courseid}'";
+        // Query for fields the module '_print_overview' functions require (rather than everything).
+
+        // Note also that there is a bug fix we need to cope with (see http://tracker.moodle.org/browse/MDL-35089)
+        if(intval($CFG->version) >= 2012062502) {
+            $sql = "SELECT id, shortname, modinfo, visible, sectioncache
+                    FROM {course} c
+                    WHERE c.id='{$courseid}'";
+        } else {
+            $sql = "SELECT id, shortname, modinfo, visible
+                    FROM {course} c
+                    WHERE c.id='{$courseid}'";
+        }
 
         $courses = $DB->get_records_sql($sql);
 
