@@ -161,7 +161,6 @@ class course_hierarchy implements renderable {
                 $result[] = $reference_programme;
             }
 
-
             // Add an array element for each orphaned course...
             foreach($orphaned_courses as $orphaned_course) {
                 $result[] = $orphaned_course;
