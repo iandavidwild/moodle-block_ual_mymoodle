@@ -101,6 +101,9 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
                 $display_link = true;
                 // Do we display the events belonging to a course?
                 $display_events = false;
+
+                $type_class = 'unknown';
+
                 // That depends on the type of node...
                 switch($node_type) {
                     case ual_course::COURSETYPE_PROGRAMME:
