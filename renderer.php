@@ -189,6 +189,134 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
         return $result;
     }
 
+    /*
+
+    // The following function is a modification of the above which allows us to insert a 'reveal' div. Note that
+    // It has been restuctured slightly such that the <UL> tag is created in a slightly different way. This function is
+    // currently unused because a similar thing is implemented in the UAL theme (using jQuery).
+    protected function htmllize_tree($tree, $indent=0) {
+        global $CFG;
+
+        $result = '';
+
+        if (empty($tree)) {
+            $result .= html_writer::tag('li', get_string('nothingtodisplay'));
+            $result = html_writer::tag('ul', $result);
+        } else {
+            foreach ($tree as $node) {
+                $name = $node->get_fullname();
+                if($this->showcode == 1) {
+                    $name .= ' ('.$node->get_idnumber().')';
+                }
+                $course_fullname = $this->trim($name);
+                $node_type = $node->get_type();
+
+                // Is this a top level (a.k.a 'primary item') link?
+                $display_top_level = false;
+                // Is this a heading (i.e. displayed in bold)?
+                $display_heading = false;
+                // Should we display a link to the course?
+                $display_link = true;
+                // Do we display the events belonging to a course?
+                $display_events = false;
+
+                $type_class = 'unknown';
+
+                // That depends on the type of node...
+                switch($node_type) {
+                    case ual_course::COURSETYPE_PROGRAMME:
+                        $display_heading = false;
+                        $type_class = 'programme';
+                        break;
+                    case ual_course::COURSETYPE_ALLYEARS:
+                        $type_class = 'course_all_years';
+                        break;
+                    case ual_course::COURSETYPE_COURSE:
+                        $display_events = true;
+                        $type_class = 'course';
+                        break;
+                    case ual_course::COURSETYPE_UNIT:
+                        $display_events = true;
+                        $type_class = 'unit';
+                        break;
+                }
+
+                // default content is the course name with no other formatting
+                $attributes = array('class' => $type_class);
+                // Construct the content...
+                $content = html_writer::tag('div', $course_fullname, $attributes);
+
+                if($display_link == true) {
+                    // Create a link if the user is enrolled on the course (which they should be if the enrolment plugin is working as it should).
+                    if($node->get_user_enrolled() == true) {
+                        $attributes['title'] = $course_fullname;
+                        $moodle_url = $CFG->wwwroot.'/course/view.php?id='.$node->get_moodle_course_id();
+                        // replace the content...
+                        $content = html_writer::link($moodle_url, $course_fullname, $attributes);
+                    } else {
+                        // Display the name but it's not clickable...
+                        $content = html_writer::tag('i', $content);
+                    }
+                }
+
+                if($display_heading == true) {
+                    $content = html_writer::tag('strong', $content);
+                }
+
+                // A primary item could be a programme, course or unit
+                if($indent == 0) {
+                    $display_top_level = true;
+                }
+
+                if($display_top_level == true) {
+                    $content = html_writer::tag('h2', $content);
+                }
+
+                if($display_events == true) {
+                    // Get events
+                    $events = $this->print_overview($node->get_moodle_course_id());
+                    if(!empty($events)) {
+                        // Display the events as a nested linked list
+                        $event_list = html_writer::start_tag('ul', array('id' => 'course_events'));
+                        foreach($events as $courseid=>$mod_events) {
+                            if(!empty($mod_events)) {
+                                foreach($mod_events as $mod_type=>$event_html) {
+                                    $event_list .= html_writer::tag('li', $event_html);
+                                }
+                            }
+                        }
+                        $event_list .= html_writer::end_tag('ul');
+
+                        $content .= $event_list;
+
+                        if($indent == 0) {
+                            $content .= html_writer::tag('div', $content, array('class' => 'reveal'));
+                        }
+                    }
+                }
+
+                $children = $node->get_children();
+
+                if ($children == null) {
+                    $result .= html_writer::tag('li', $content, $attributes);
+                } else {
+                    // If this has parents OR it doesn't have parents or children then we need to display it...???
+                    if($indent > 0) {
+                        // TODO create 'reveal' <div> using html_writer...
+                        $result .= html_writer::tag('li', $content.'<div class=\'reveal\'>'.$this->htmllize_tree($children, $indent+1).'</div>', $attributes);
+                    } else {
+                        $result .= html_writer::tag('li', $content.$this->htmllize_tree($children, $indent+1), $attributes);
+                    }
+                }
+            }
+
+            $result = html_writer::tag('ul', $result);
+        }
+
+        return $result;
+    }
+    */
+
     /**
      * Trims the text and shorttext properties of this node and optionally
      * all of its children.
