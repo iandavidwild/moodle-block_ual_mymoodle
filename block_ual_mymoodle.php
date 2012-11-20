@@ -72,7 +72,6 @@ class block_ual_mymoodle extends block_base {
      */
     function html_attributes() {
         $attributes = parent::html_attributes();
-        $attributes['class'] .= ' course_menu';
 
         return $attributes;
     }
