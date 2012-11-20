@@ -41,7 +41,7 @@ class block_ual_mymoodle_edit_form extends block_edit_form {
         $mform->setDefault('config_title', get_string('pluginname', 'block_ual_mymoodle'));
         $mform->setType('config_title', PARAM_MULTILANG);
 
-        $mform->addElement('checkbox', 'config_showcode', get_string('showcode', 'block_ual_mymoodle'));
+        $mform->addElement('advcheckbox', 'config_showcode', get_string('showcode', 'block_ual_mymoodle'));
         $mform->setDefault('config_showcode', 0);
 
         $options = array(
