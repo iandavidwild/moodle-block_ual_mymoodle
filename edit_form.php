@@ -44,6 +44,9 @@ class block_ual_mymoodle_edit_form extends block_edit_form {
         $mform->addElement('advcheckbox', 'config_showcode', get_string('showcode', 'block_ual_mymoodle'));
         $mform->setDefault('config_showcode', 0);
 
+        $mform->addElement('advcheckbox', 'config_showmoodlecourses', get_string('showmoodlecourses', 'block_ual_mymoodle'));
+        $mform->setDefault('config_showmoodlecourses', 0);
+
         $options = array(
             block_ual_mymoodle::TRIM_RIGHT => get_string('trimmoderight', 'block_ual_mymoodle'),
             block_ual_mymoodle::TRIM_LEFT => get_string('trimmodeleft', 'block_ual_mymoodle'),

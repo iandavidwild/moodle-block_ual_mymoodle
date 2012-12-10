@@ -29,6 +29,8 @@ class course_hierarchy implements renderable {
     public $orphaned_courses = array();
     public $orphaned_units = array();
 
+    public $moodle_courses = array();
+
     public function __construct() {
         global $USER, $CFG;
         $this->context = get_context_instance(CONTEXT_USER, $USER->id);
@@ -47,6 +49,9 @@ class course_hierarchy implements renderable {
 
             // Which programmes is this user enrolled on?
             $programmes = $mis->get_user_programmes($ual_username);
+
+            // Is the user enrolled on any Moodle courses that aren't recorded in the IDM data?
+            $this->moodle_courses = $mis->get_moodle_courses($USER->id, $ual_username);
 
             // Now make each course adopt a unit. Note that units could have more than one parent...
             $this->courses = $this->construct_view_tree($programmes, $courses, $units);

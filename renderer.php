@@ -33,6 +33,7 @@ require_once($CFG->dirroot . '/blocks/ual_mymoodle/lib.php');
 class block_ual_mymoodle_renderer extends plugin_renderer_base {
 
     private $showcode = 0;
+    private $showmoodlecourses = 0;
     private $trimmode = block_ual_mymoodle::TRIM_RIGHT;
     private $trimlength = 50;
 
@@ -40,8 +41,9 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
      * Prints course hierarchy view
      * @return string
      */
-    public function course_hierarchy($showcode, $trimmode, $trimlength) {
+    public function course_hierarchy($showcode, $trimmode, $trimlength, $showmoodlecourses) {
         $this->showcode = $showcode;
+        $this->showmoodlecourses = $showmoodlecourses;
         $this->trimmode = $trimmode;
         $this->trimlength = $trimlength;
 
@@ -55,6 +57,8 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
      * @return string
      */
     public function render_course_hierarchy(course_hierarchy $tree) {
+        global $CFG;
+
         if (empty($tree) ) {
             $html = $this->output->box(get_string('nocourses', 'block_ual_mymoodle'));
         } else {
@@ -62,6 +66,19 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
             $html = '<div id="'.$htmlid.'">';
             $html .= $this->htmllize_tree($tree->courses);
             $html .= '</div>';
+        }
+
+        // Do we display courses that the user is enrolled on in Moodle but not enrolled on them according to the IDM data?
+        if($this->showmoodlecourses && !empty($tree->moodle_courses)) {
+            $orphaned_courses = html_writer::start_tag('ul', array('class' => 'orphaned'));
+            foreach($tree->moodle_courses as $course) {
+                $courselnk = $CFG->wwwroot.'/course/view.php?id='.$course->id;
+                $linkhtml = html_writer::link($courselnk,$course->fullname, array('class' => 'orphaned_course'));
+                $orphaned_courses .= html_writer::tag('li', $linkhtml);
+            }
+            $orphaned_courses .= html_writer::end_tag('ul');
+
+            $html .= $orphaned_courses;
         }
 
         return $html;
