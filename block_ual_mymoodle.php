@@ -96,9 +96,14 @@ class block_ual_mymoodle extends block_base {
         $showmoodlecourses = 0;
         $trimmode = 1;
         $trimlength = 50;
+        $admin_tool_url = '';
 
         if (!empty($this->config->showcode)) {
             $showcode = (int)$this->config->showcode;
+        }
+
+        if (!empty($this->config->admin_tool_url)) {
+            $admin_tool_url = $this->config->admin_tool_url;
         }
 
         if (!empty($this->config->showmoodlecourses)) {
@@ -131,7 +136,7 @@ class block_ual_mymoodle extends block_base {
 
             $renderer = $this->page->get_renderer('block_ual_mymoodle');
 
-            $this->content->text = $renderer->course_hierarchy($showcode, $trimmode, $trimlength, $showmoodlecourses);
+            $this->content->text = $renderer->course_hierarchy($showcode, $trimmode, $trimlength, $showmoodlecourses, $admin_tool_url);
             $this->content->footer = '';
 
         }
