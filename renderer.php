@@ -36,16 +36,18 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
     private $showmoodlecourses = 0;
     private $trimmode = block_ual_mymoodle::TRIM_RIGHT;
     private $trimlength = 50;
+    private $admin_tool_url = '';
 
     /**
      * Prints course hierarchy view
      * @return string
      */
-    public function course_hierarchy($showcode, $trimmode, $trimlength, $showmoodlecourses) {
+    public function course_hierarchy($showcode, $trimmode, $trimlength, $showmoodlecourses, $admin_tool_url) {
         $this->showcode = $showcode;
         $this->showmoodlecourses = $showmoodlecourses;
         $this->trimmode = $trimmode;
         $this->trimlength = $trimlength;
+        $this->admin_tool_url = $admin_tool_url;
 
         return $this->render(new course_hierarchy);
     }
@@ -57,13 +59,31 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
      * @return string
      */
     public function render_course_hierarchy(course_hierarchy $tree) {
-        global $CFG;
+        global $CFG, $USER;
+
+        // Display link to Admin DB tool?
+        $context = get_context_instance(CONTEXT_SYSTEM);
+        $display_link = has_capability('block/ual_mymoodle:admin_db_link', $context);
+
+        $html = ""; // Start with an empty string.
+
+        if($display_link) {
+            $button_text = get_string('admin_tool_link', 'block_ual_mymoodle');
+            $redirect_url = $this->admin_tool_url;
+
+            $html .="<div class='singlebutton'><form action='{$redirect_url}' method='post'>
+                        <input type='hidden' name='url' value='{$this->admin_tool_url}'/>
+                        <input type='hidden' name='username' value='{$USER->username}'/>
+                        <input type='hidden' name='magic' value='qazmagicwsx123'/>
+                        <input type='submit' value='{$button_text}'/>
+                    </form></div>";
+        }
 
         if (empty($tree) ) {
-            $html = $this->output->box(get_string('nocourses', 'block_ual_mymoodle'));
+            $html .= $this->output->box(get_string('nocourses', 'block_ual_mymoodle'));
         } else {
             $htmlid = 'course_hierarchy_'.uniqid();
-            $html = '<div id="'.$htmlid.'">';
+            $html .= '<div id="'.$htmlid.'">';
             $html .= $this->htmllize_tree($tree->courses);
             $html .= '</div>';
         }
