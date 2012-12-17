@@ -25,13 +25,11 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-
 $string['ual_mymoodle']         = 'My UAL Moodle';
 $string['pluginname']           = 'My UAL Moodle';
 $string['nocourses']            = 'Nothing to display';
 
 // 'Configuring a My UAL Moodle block' form strings
-
 $string['title']                = 'Title';
 $string['showcode']             = 'Show course code';
 $string['showmoodlecourses']    = 'Show orphaned courses';
@@ -40,11 +38,18 @@ $string['trimmoderight']        = 'Trim characters from the right';
 $string['trimmodecentre']       = 'Trim characters from the centre';
 $string['trimmode']             = 'Trim mode';
 $string['trimlength']           = 'How many characters to trim to';
+$string['admin_tool_url']       = 'Admin DB Tool URL';
+$string['default_admin_tool_url'] = 'http://w01.ual01test.wf.ulcc.ac.uk/ual_admintool/login.php';
 
 // Tree display
-
 $string['year']                 = 'Year';
 $string['unknown_year']         = 'not known';
+
+// Capabilities
+
+$string['ual_mymoodle:admin_db_link'] = 'Display Admin DB Tool Link';
+
+$string['admin_tool_link']      = 'Open AdminDB';
 
 
 
