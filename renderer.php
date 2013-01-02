@@ -79,13 +79,15 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
                     </form></div>";
         }
 
-        if (empty($tree) ) {
-            $html .= $this->output->box(get_string('nocourses', 'block_ual_mymoodle'));
-        } else {
+        $displayed_something = false;
+
+        if (!empty($tree) ) {
             $htmlid = 'course_hierarchy_'.uniqid();
             $html .= '<div id="'.$htmlid.'">';
             $html .= $this->htmllize_tree($tree->courses);
             $html .= '</div>';
+
+            $displayed_something = true;
         }
 
         // Do we display courses that the user is enrolled on in Moodle but not enrolled on them according to the IDM data?
@@ -99,6 +101,12 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
             $orphaned_courses .= html_writer::end_tag('ul');
 
             $html .= $orphaned_courses;
+
+            $displayed_something = true;
+        }
+
+        if(!$displayed_something) {
+            $html .= $this->output->box(get_string('nocourses', 'block_ual_mymoodle'));
         }
 
         return $html;
@@ -116,9 +124,7 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
 
         $result = html_writer::start_tag('ul');
 
-        if (empty($tree)) {
-            $result .= html_writer::tag('li', get_string('nothingtodisplay'));
-        } else {
+        if (!empty($tree)) {
             foreach ($tree as $node) {
 
                 $name = $node->get_fullname();
