@@ -81,7 +81,7 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
 
         $displayed_something = false;
 
-        if (!empty($tree) ) {
+        if (!empty($tree->courses) ) {
             $htmlid = 'course_hierarchy_'.uniqid();
             $html .= '<div id="'.$htmlid.'">';
             $html .= $this->htmllize_tree($tree->courses);
