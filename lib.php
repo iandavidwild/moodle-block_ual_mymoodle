@@ -185,6 +185,8 @@ class course_hierarchy implements renderable {
     }
 
     private function get_years_from_courses($course_years) {
+        global $USER;
+
         $result = array();
 
         $grouped_courses = array();
@@ -206,6 +208,9 @@ class course_hierarchy implements renderable {
                     $moodle_course = $this->get_moodle_course($course_year);
                     if($moodle_course) {
                         $new_course->set_moodle_course_id($moodle_course->id);
+                        $new_course->set_fullname($moodle_course->fullname);
+                        $mis = new ual_mis();
+                        $new_course->set_user_enrolled($mis->get_enrolled($USER->id, $moodle_course->id));
                     }
 
                     $result[] = $new_course;
