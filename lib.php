@@ -83,6 +83,12 @@ class course_hierarchy implements renderable {
                     $programme_code = $programme->get_aos_code().$programme->get_aos_period().$programme->get_acad_period();
                     $programme->set_user_enrolled($mis->get_enrolled($USER->id, $programme->get_moodle_course_id()));
                     $reference_programmes[$programme_code] = $programme;
+
+                    // Remove programme from the $moodle_courses array if necessary
+                    $programme_moodle_id = $programme->get_moodle_course_id();
+                    if(isset($this->moodle_courses[$programme_moodle_id])) {
+                        unset($this->moodle_courses[$programme_moodle_id]);
+                    }
                 }
             }
 
@@ -147,7 +153,9 @@ class course_hierarchy implements renderable {
                                 $course->set_idnumber($orphaned_course->get_idnumber());
                                 $course->set_moodle_course_id($orphaned_course->get_moodle_course_id());
                                 $course->set_user_enrolled($orphaned_course->get_user_enrolled());
-                                unset($orphaned_courses[$elementkey]);
+                                if(isset($orphaned_courses[$elementkey])) {
+                                    unset($orphaned_courses[$elementkey]);
+                                }
                             }
                         }
                     }
@@ -155,7 +163,14 @@ class course_hierarchy implements renderable {
                     if(!empty($new_courses)) {
                         $reference_programme->abandon_children();
                         foreach($new_courses as $new_course) {
+                            // Programmes need to adopt the 'Course (all years)'
                             $reference_programme->adopt_child($new_course);
+
+                            // Remove course (all years) from the $moodle_courses array if necessary
+                            $all_years_moodle_id = $new_course->get_moodle_course_id();
+                            if(isset($this->moodle_courses[$all_years_moodle_id])) {
+                                unset($this->moodle_courses[$all_years_moodle_id]);
+                            }
                         }
                     }
                 }
