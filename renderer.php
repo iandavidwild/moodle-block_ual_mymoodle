@@ -59,33 +59,17 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
      * @return string
      */
     public function render_course_hierarchy(course_hierarchy $tree) {
-        global $CFG, $USER;
-
-        // Display link to Admin DB tool?
-        $context = get_context_instance(CONTEXT_SYSTEM);
-        $display_link = has_capability('block/ual_mymoodle:admin_db_link', $context);
+        global $CFG;
 
         $html = ""; // Start with an empty string.
-
-        if($display_link) {
-            $button_text = get_string('admin_tool_link', 'block_ual_mymoodle');
-            $redirect_url = $this->admin_tool_url;
-
-            $html .="<div class='singlebutton'><form action='{$redirect_url}' method='post'>
-                        <input type='hidden' name='url' value='{$this->admin_tool_url}'/>
-                        <input type='hidden' name='username' value='{$USER->username}'/>
-                        <input type='hidden' name='magic' value='qazmagicwsx123'/>
-                        <input type='submit' value='{$button_text}'/>
-                    </form></div>";
-        }
 
         $displayed_something = false;
 
         if (!empty($tree->courses) ) {
             $htmlid = 'course_hierarchy_'.uniqid();
-            $html .= '<div id="'.$htmlid.'">';
+            $html .= html_writer::start_tag('div', array('id' => $htmlid));
             $html .= $this->htmllize_tree($tree->courses);
-            $html .= '</div>';
+            $html .= html_writer::end_tag('div');
 
             $displayed_something = true;
         }
