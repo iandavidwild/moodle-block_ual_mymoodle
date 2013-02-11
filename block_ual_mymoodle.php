@@ -162,4 +162,36 @@ class block_ual_mymoodle extends block_base {
     public function instance_allow_multiple() {
         return false;
     }
+
+    /**
+     * The 'My Moodle' block cannot be hidden by default as it is integral to
+     * the navigation of Moodle.
+     *
+     * @return false
+     */
+    function  instance_can_be_hidden() {
+        return false;
+    }
+
+    /**
+     * An instance can't be docked for the same reasons as for instance_can_be_hidden
+     *
+     * @return bool true or false depending on whether the instance can be docked or not.
+     */
+    function instance_can_be_docked() {
+        return false;
+    }
+
+    /**
+     * Don't allow anyone other than an administrator to delete this block as it's integral to
+     * the navigation of Moodle.
+     *
+     * @return boolean
+     */
+    function user_can_edit() {
+        $context = get_context_instance(CONTEXT_SYSTEM);
+        return (has_capability('block/ual_mymoodle:can_edit', $context));
+    }
+
+
 }

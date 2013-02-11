@@ -20,7 +20,28 @@
  *
  * @package    block
  * @subpackage ual_mymoodle
- * @copyright  2012 University of London Computer Centre
+ * @copyright  2012-2013 University of London Computer Centre
  * @author     Ian Wild {@link http://moodle.org/user/view.php?id=81450}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+$capabilities = array(
+
+    'block/ual_mymoodle:can_edit' => array(
+        'riskbitmask'  => RISK_CONFIG,
+        'captype'      => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes'   => array(
+            'manager'          => CAP_ALLOW
+        )
+    ),
+
+    'block/ual_mymoodle:can_move' => array(
+    'riskbitmask'  => RISK_CONFIG,
+    'captype'      => 'write',
+    'contextlevel' => CONTEXT_SYSTEM,
+    'archetypes'   => array(
+        'manager'          => CAP_ALLOW
+    )
+)
+);
