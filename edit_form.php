@@ -58,10 +58,5 @@ class block_ual_mymoodle_edit_form extends block_edit_form {
         $mform->addElement('text', 'config_trimlength', get_string('trimlength', 'block_ual_mymoodle'));
         $mform->setDefault('config_trimlength', 50);
         $mform->setType('config_trimlength', PARAM_INT);
-
-        $mform->addElement('text', 'config_admin_tool_url', get_string('admin_tool_url', 'block_ual_mymoodle'));
-        $mform->setDefault('config_admin_tool_url', get_string('default_admin_tool_url', 'block_ual_mymoodle'));
-        $mform->setType('config_admin_tool_url', PARAM_URL);
-
     }
 }
