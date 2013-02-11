@@ -24,15 +24,3 @@
  * @author     Ian Wild {@link http://moodle.org/user/view.php?id=81450}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-$capabilities = array(
-
-    'block/ual_mymoodle:admin_db_link' => array(
-        'riskbitmask'  => RISK_CONFIG,
-        'captype'      => 'write',
-        'contextlevel' => CONTEXT_SYSTEM,
-        'archetypes'   => array(
-            'manager'          => CAP_ALLOW
-        )
-    )
-);
