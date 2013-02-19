@@ -33,13 +33,12 @@ $string['nocourses']            = 'Nothing to display';
 $string['title']                = 'Title';
 $string['showcode']             = 'Show course code';
 $string['showmoodlecourses']    = 'Show orphaned courses';
+$string['showhiddencourses']    = 'Show hidden courses';
 $string['trimmodeleft']         = 'Trim characters from the left';
 $string['trimmoderight']        = 'Trim characters from the right';
 $string['trimmodecentre']       = 'Trim characters from the centre';
 $string['trimmode']             = 'Trim mode';
 $string['trimlength']           = 'How many characters to trim to';
-$string['admin_tool_url']       = 'Admin DB Tool URL';
-$string['default_admin_tool_url'] = 'http://w01.ual01test.wf.ulcc.ac.uk/ual_admintool/login.php';
 
 // Tree display
 $string['year']                 = 'Year';
