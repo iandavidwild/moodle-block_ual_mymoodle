@@ -96,7 +96,7 @@ class block_ual_mymoodle extends block_base {
         $showmoodlecourses = 0;
         $trimmode = 1;
         $trimlength = 50;
-        $admin_tool_url = '';
+        $showhiddencourses = true;
 
         if (!empty($this->config->showcode)) {
             $showcode = (int)$this->config->showcode;
@@ -117,6 +117,10 @@ class block_ual_mymoodle extends block_base {
         if (!empty($this->config->trimlength)) {
             $trimlength = (int)$this->config->trimlength;
         }
+        
+        if (!empty($this->config->showhiddencourses)) {
+        	$showhiddencourses = (bool)$this->config->showhiddencourses;
+        }
 
         // Load userdefined title and make sure it's never empty.
         if (empty($this->config->title)) {
@@ -136,7 +140,7 @@ class block_ual_mymoodle extends block_base {
 
             $renderer = $this->page->get_renderer('block_ual_mymoodle');
 
-            $this->content->text = $renderer->course_hierarchy($showcode, $trimmode, $trimlength, $showmoodlecourses, $admin_tool_url);
+            $this->content->text = $renderer->course_hierarchy($showcode, $trimmode, $trimlength, $showmoodlecourses, $showhiddencourses);
             $this->content->footer = '';
 
         }

@@ -36,18 +36,18 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
     private $showmoodlecourses = 0;
     private $trimmode = block_ual_mymoodle::TRIM_RIGHT;
     private $trimlength = 50;
-    private $admin_tool_url = '';
+    private $showhiddencourses = false;
 
     /**
      * Prints course hierarchy view
      * @return string
      */
-    public function course_hierarchy($showcode, $trimmode, $trimlength, $showmoodlecourses, $admin_tool_url) {
+    public function course_hierarchy($showcode, $trimmode, $trimlength, $showmoodlecourses, $showhiddencourses) {
         $this->showcode = $showcode;
         $this->showmoodlecourses = $showmoodlecourses;
         $this->trimmode = $trimmode;
         $this->trimlength = $trimlength;
-        $this->admin_tool_url = $admin_tool_url;
+        $this->showhiddencourses = $showhiddencourses;
 
         return $this->render(new course_hierarchy);
     }
@@ -153,7 +153,7 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
 
                 $content = '';  // Start with empty content
 
-                if($visible == true) {
+                if($visible == true || $this->showhiddencourses) {
                     // default content is the course name with no other formatting
                     $attributes = array('class' => $type_class);
                     // Construct the content...
@@ -174,6 +174,11 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
 
                     if($display_heading == true) {
                         $content = html_writer::tag('strong', $content);
+                    }
+                    
+                    if($visible == false) {
+                    	// Distingish a hidden course so we can style it.
+                    	$content = html_writer::tag('div', $content, array('class' => 'hidden_course'));
                     }
 
                     // A primary item could be a programme, course or unit
