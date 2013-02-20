@@ -19,7 +19,7 @@
  *
  * @package    block
  * @subpackage ual_mymoodle
- * @copyright  2012 University of London Computer Centre
+ * @copyright  2012-13 University of London Computer Centre
  * @author     Ian Wild {@link http://moodle.org/user/view.php?id=325899}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -196,6 +196,4 @@ class block_ual_mymoodle extends block_base {
         $context = get_context_instance(CONTEXT_SYSTEM);
         return (has_capability('block/ual_mymoodle:can_edit', $context));
     }
-
-
 }

@@ -46,7 +46,7 @@ $string['unknown_year']         = 'not known';
 
 // User capabilities
 $string['ual_mymoodle:can_edit']= 'Can edit';
-$string['ual_mymoodle:can_move']= 'Can move';
+
 
 
 

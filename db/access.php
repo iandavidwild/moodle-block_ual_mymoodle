@@ -34,14 +34,5 @@ $capabilities = array(
         'archetypes'   => array(
             'manager'          => CAP_ALLOW
         )
-    ),
-
-    'block/ual_mymoodle:can_move' => array(
-    'riskbitmask'  => RISK_CONFIG,
-    'captype'      => 'write',
-    'contextlevel' => CONTEXT_SYSTEM,
-    'archetypes'   => array(
-        'manager'          => CAP_ALLOW
     )
-)
 );
