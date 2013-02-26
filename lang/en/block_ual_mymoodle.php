@@ -33,7 +33,6 @@ $string['nocourses']            = 'Nothing to display';
 $string['title']                = 'Title';
 $string['showcode']             = 'Show course code';
 $string['showmoodlecourses']    = 'Show orphaned courses';
-$string['showhiddencourses']    = 'Show hidden courses';
 $string['trimmodeleft']         = 'Trim characters from the left';
 $string['trimmoderight']        = 'Trim characters from the right';
 $string['trimmodecentre']       = 'Trim characters from the centre';
@@ -46,6 +45,7 @@ $string['unknown_year']         = 'not known';
 
 // User capabilities
 $string['ual_mymoodle:can_edit']= 'Can edit';
+$string['ual_mymoodle:show_hidden_courses'] = 'Show hidden courses';
 
 
 
