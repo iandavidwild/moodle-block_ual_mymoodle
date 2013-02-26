@@ -118,9 +118,8 @@ class block_ual_mymoodle extends block_base {
             $trimlength = (int)$this->config->trimlength;
         }
         
-        if (!empty($this->config->showhiddencourses)) {
-        	$showhiddencourses = (bool)$this->config->showhiddencourses;
-        }
+        $context = get_context_instance(CONTEXT_SYSTEM);
+        $showhiddencourses = has_capability('block/ual_mymoodle:show_hidden_courses', $context);
 
         // Load userdefined title and make sure it's never empty.
         if (empty($this->config->title)) {
