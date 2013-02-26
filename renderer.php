@@ -126,7 +126,7 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
                 // Is this a heading (i.e. displayed in bold)?
                 $display_heading = false;
                 // Should we display a link to the course?
-                $display_link = true;
+                $display_link = $visible;
                 // Do we display the events belonging to a course?
                 $display_events = false;
 
@@ -153,19 +153,23 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
 
                 $content = '';  // Start with empty content
 
-                if($visible == true || $this->showhiddencourses) {
-                    // default content is the course name with no other formatting
-                    $attributes = array('class' => $type_class);
+                // default content is the course name with no other formatting
+                $li_attributes = array('class' => $type_class);
+                
+                if($visible == false) {
+                	$li_attributes['class'] .= ' hidden';
+                }
+                
+                if($visible == true || $this->showhiddencourses) {    
                     // Construct the content...
-                    $content = html_writer::tag('div', $course_fullname, $attributes);
+                    $content = html_writer::tag('div', $course_fullname);
 
                     if($display_link == true) {
                         // Create a link if the user is enrolled on the course (which they should be if the enrolment plugin is working as it should).
                         if($node->get_user_enrolled() == true) {
-                            $attributes['title'] = $course_fullname;
                             $moodle_url = $CFG->wwwroot.'/course/view.php?id='.$node->get_moodle_course_id();
                             // replace the content...
-                            $content = html_writer::link($moodle_url, $course_fullname, $attributes);
+                            $content = html_writer::link($moodle_url, $course_fullname, array('title'=>$course_fullname));
                         } else {
                             // Display the name but it's not clickable...
                             $content = html_writer::tag('i', $content);
@@ -176,10 +180,12 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
                         $content = html_writer::tag('strong', $content);
                     }
                     
+                    /*
                     if($visible == false) {
                     	// Distingish a hidden course so we can style it.
-                    	$content = html_writer::tag('div', $content, array('class' => 'hidden_course'));
+                    	$content = html_writer::tag('div', $content, array('class'=>'hidden_course'));
                     }
+                    */
 
                     // A primary item could be a programme, course or unit
                     if($indent == 0) {
@@ -213,12 +219,10 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
                 $children = $node->get_children();
 
                 if ($children == null) {
-                    if($visible == true) {
-                        $result .= html_writer::tag('li', $content, $attributes);
-                    }
+                    $result .= html_writer::tag('li', $content, $li_attributes);
                 } else {
                     // If this has parents OR it doesn't have parents or children then we need to display it...???
-                    $result .= html_writer::tag('li', $content.$this->htmllize_tree($children, $indent+1), $attributes);
+                    $result .= html_writer::tag('li', $content.$this->htmllize_tree($children, $indent+1), $li_attributes);
                 }
             }
         }
