@@ -37,17 +37,19 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
     private $trimmode = block_ual_mymoodle::TRIM_RIGHT;
     private $trimlength = 50;
     private $showhiddencourses = false;
+    private $courseid = 0;
 
     /**
      * Prints course hierarchy view
      * @return string
      */
-    public function course_hierarchy($showcode, $trimmode, $trimlength, $showmoodlecourses, $showhiddencourses) {
+    public function course_hierarchy($showcode, $trimmode, $trimlength, $showmoodlecourses, $showhiddencourses, $courseid) {
         $this->showcode = $showcode;
         $this->showmoodlecourses = $showmoodlecourses;
         $this->trimmode = $trimmode;
         $this->trimlength = $trimlength;
         $this->showhiddencourses = $showhiddencourses;
+        $this->courseid = $courseid;
 
         return $this->render(new course_hierarchy);
     }
