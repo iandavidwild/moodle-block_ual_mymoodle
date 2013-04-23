@@ -238,10 +238,9 @@ class course_hierarchy implements renderable {
 
                     foreach($courses as $course) {
                         $new_course->adopt_child($course);
-                        
+                    }    
                     $result[] = $new_course;
                     
-                    }
                 }
             }
         }
