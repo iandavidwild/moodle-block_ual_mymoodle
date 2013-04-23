@@ -138,8 +138,13 @@ class block_ual_mymoodle extends block_base {
             // TODO: add capability check here?
 
             $renderer = $this->page->get_renderer('block_ual_mymoodle');
+            
+            $courseid = $COURSE->id;
+            if(!$courseid) {
+                $courseid = 1;  // Assume we are on the site front page
+            }
 
-            $this->content->text = $renderer->course_hierarchy($showcode, $trimmode, $trimlength, $showmoodlecourses, $showhiddencourses);
+            $this->content->text = $renderer->course_hierarchy($showcode, $trimmode, $trimlength, $showmoodlecourses, $showhiddencourses, $courseid);
             $this->content->footer = '';
 
         }
