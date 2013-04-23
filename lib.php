@@ -236,9 +236,11 @@ class course_hierarchy implements renderable {
                         $new_course->set_user_enrolled($mis->get_enrolled($USER->id, $moodle_course->id));
                     }
 
-                    $result[] = $new_course;
                     foreach($courses as $course) {
-                        $result[] = $course;
+                        $new_course->adopt_child($course);
+                        
+                    $result[] = $new_course;
+                    
                     }
                 }
             }
