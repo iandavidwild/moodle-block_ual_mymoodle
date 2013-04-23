@@ -66,7 +66,10 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
         $displayed_something = false;
 
         if (!empty($tree->courses) ) {
+            
             $htmlid = 'course_hierarchy_'.uniqid();
+            $this->page->requires->js_init_call('M.block_ual_mymoodle.init_tree', array(false, $htmlid, $CFG->wwwroot.'/course/view.php?id='.$this->courseid));
+            
             $html .= html_writer::start_tag('div', array('id' => $htmlid));
             $html .= $this->htmllize_tree($tree->courses);
             $html .= html_writer::end_tag('div');
