@@ -83,7 +83,7 @@ class block_ual_mymoodle extends block_base {
      */
     public function get_content() {
 
-        global $CFG, $USER, $PAGE, $OUTPUT;
+        global $CFG, $USER, $PAGE, $OUTPUT, $COURSE;
 
         if ($this->content !== null) {
             return $this->content;
