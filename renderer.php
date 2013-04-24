@@ -134,6 +134,8 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
                 $display_link = $visible;
                 // Do we display the events belonging to a course?
                 $display_events = false;
+                // Is the node expanded or collapsed when the tree is first rendered
+                $display_expanded = false;
 
                 $type_class = 'unknown';
 
@@ -141,6 +143,7 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
                 switch($node_type) {
                     case ual_course::COURSETYPE_PROGRAMME:
                         $display_heading = false;
+                        $display_expanded = true;
                         $type_class = 'programme';
                         break;
                     case ual_course::COURSETYPE_ALLYEARS:
@@ -161,8 +164,14 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
                 // default content is the course name with no other formatting
                 $li_attributes = array('class' => $type_class);
                 
+                // is the node hidden?
                 if($visible == false) {
                 	$li_attributes['class'] .= ' hidden';
+                }
+                
+                // is the node collapsed or expanded?
+                if($display_expanded) {
+                    $li_attributes['class'] .= ' expanded';
                 }
                 
                 if($visible == true || $this->showhiddencourses) {    
@@ -184,13 +193,6 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
                     if($display_heading == true) {
                         $content = html_writer::tag('strong', $content);
                     }
-                    
-                    /*
-                    if($visible == false) {
-                    	// Distingish a hidden course so we can style it.
-                    	$content = html_writer::tag('div', $content, array('class'=>'hidden_course'));
-                    }
-                    */
 
                     // A primary item could be a programme, course or unit
                     if($indent == 0) {
@@ -206,7 +208,7 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
                         $events = $this->print_overview($node->get_moodle_course_id());
                         if(!empty($events)) {
                             // Display the events as a nested linked list
-                            $event_list = html_writer::start_tag('ul', array('id' => 'course_events'));
+                            $event_list = html_writer::start_tag('ul', array('id' => 'course_events', 'class' => 'expanded'));
                             foreach($events as $courseid=>$mod_events) {
                                 if(!empty($mod_events)) {
                                     foreach($mod_events as $mod_type=>$event_html) {
