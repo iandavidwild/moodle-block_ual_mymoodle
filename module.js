@@ -32,7 +32,13 @@ M.block_ual_mymoodle.init_tree = function(Y, expand_all, htmlid, current_url) {
         // 1. Fix to bug UALMOODLE-58: look for &amp; entity in label and replace with &. This is to fix a bug in YUI TreeView
         // 2. Focus the current node
         var current_node = null;
-        
+
+        /**
+         * Note that this function caches the class names in the title rather than using an HTML5 'data-*' attribute
+         * as we can't rely on HTML5 support.
+         *
+         * @param parentEl
+         */
         function preprocess(parentEl){
             // check all the anchor elements and store in the title any class names. These will be replaced by YUI so we need to
             // record them somewhere.
@@ -50,42 +56,48 @@ M.block_ual_mymoodle.init_tree = function(Y, expand_all, htmlid, current_url) {
             }
         }
 
+        function addClass(id,new_class){
+            var i,n=0;
+
+            new_class=new_class.split(",");
+
+            for(i=0;i<new_class.length;i++){
+                var el = document.getElementById(id);
+                if(el != null) {
+                    if((" "+el.className+" ").indexOf(" "+new_class[i]+" ")==-1){
+                        el.className+=" "+new_class[i];
+                    }
+                    n++;
+                }
+            }
+
+            return n;
+        }
+
         function postprocess(parentEl){
             // replace any class names that were removed from anchors when the tree was built. See preprocess() for details.
-            var child_tables = parentEl.getElementsByTagName('table');
+            var all = parentEl.getElementsByTagName('a');
 
-            for (var i = -1, il = child_tables.length; ++i < il;) {
-                var this_table = child_tables[i];
-                
-                var anchors = parentEl.getElementsByTagName('a');
+            for (var i = -1, l = all.length; ++i < l;) {
+                var e = all[i];
+                if(e.title) {
+                    var title = e.title;
+                    var start_of_list = title.indexOf('<<<<');
+                    if(start_of_list > -1) {
+                        start_of_list = start_of_list + 4; // offset to the end of the chevrons.
+                        var end_of_list = title.indexOf('>>>>');
+                        var class_list = title.substring(start_of_list, end_of_list);
 
-                for (var n = -1, nl = anchors.length; ++n < nl;) {
-                    var e = anchors[n];
-                	
-	                if(e.title) {
-	                    var title = e.title;
-	                    var start_of_list = title.indexOf('<<<<');
-	                    if(start_of_list > -1) {
-	                        start_of_list = start_of_list + 4; // offset to the end of the chevrons.
-	                        var end_of_list = title.indexOf('>>>>');
-	                        var class_list = title.substring(start_of_list, end_of_list);
-	
-	                        var c = e.getAttribute("class");
-	                        c = c+" "+class_list;
-	                        e.className = c;
-	
-	                        // Now change the title back
-	                        var new_title = title.substring(end_of_list+4, title.length);
-	                        e.title = new_title;
-	                    }//if(start_of_list > -1) {
-	                }//if(e.title) {
-                
-                // Our tree might be deeply nested...
-	            postprocess(this_table);
-	                
-                }//for (var n = -1, nl = anchors.length; ++n < nl;) {
-                
-            }//for (var i = -1, il = child_tables.length; ++i < il;) {
+                        var c = e.getAttribute("class");
+                        c = c+" "+class_list;
+                        e.className = c;
+
+                        // Now change the title back
+                        var new_title = title.substring(end_of_list+4, title.length);
+                        e.title = new_title;
+                    }//if(start_of_list > -1) {
+                }//if(e.title) {
+            }//for (var i = -1, l = all.length; ++i < l;) {
         }
 
         function tree_traversal(node){
@@ -100,6 +112,7 @@ M.block_ual_mymoodle.init_tree = function(Y, expand_all, htmlid, current_url) {
                     }
                     if(current_url) {
                         var href = test_node.href;
+
                         if(href == current_url) {
                             current_node = test_node;
                         }
@@ -115,18 +128,26 @@ M.block_ual_mymoodle.init_tree = function(Y, expand_all, htmlid, current_url) {
 
         // Construct the tree
         var tree = new YAHOO.widget.TreeView(htmlid);
-        
-        // Now the tree has been constructed traverse it to correct duff HTML...
+
+        tree.subscribe("expandComplete", function(node) {
+            var elid = node.getElId();
+
+            var el = document.getElementById(elid);
+
+            postprocess(el);
+        });
+
         var root = tree.getRoot();
-        if(root) {
-            var array = tree_traversal(root);
-        }
+
+        // Now the tree has been constructed traverse it to correct duff HTML.
+        // tree_traversal() is a recursive function so pass it the global root node...
+        tree_traversal(root);
 
         // The tree is not created in the DOM until this method is called:
         tree.render();
 
-        // Post process the rendered tree
-        document.getElementById(htmlid); // Obtain the parent element again as the DOM will have been restructured
+        // Post process the rendered tree - note not all of the nodes will be rendered at this point (they are
+        // loaded but removed from the DOM). Again, postprocess is a recursive function...
         postprocess(parentEl);
         
         // Move focus to the current node...
