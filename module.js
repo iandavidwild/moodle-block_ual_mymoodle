@@ -32,6 +32,61 @@ M.block_ual_mymoodle.init_tree = function(Y, expand_all, htmlid, current_url) {
         // 1. Fix to bug UALMOODLE-58: look for &amp; entity in label and replace with &. This is to fix a bug in YUI TreeView
         // 2. Focus the current node
         var current_node = null;
+        
+        function preprocess(parentEl){
+            // check all the anchor elements and store in the title any class names. These will be replaced by YUI so we need to
+            // record them somewhere.
+            var all = parentEl.getElementsByTagName('a');
+
+            var c;
+
+            for (var i = -1, l = all.length; ++i < l;) {
+                var e = all[i];
+                if(e.className) {
+                    c = e.getAttribute("class");
+                    var original_title = e.title;
+                    e.title = "<<<<"+c+">>>>"+original_title;
+                }
+            }
+        }
+
+        function postprocess(parentEl){
+            // replace any class names that were removed from anchors when the tree was built. See preprocess() for details.
+            var child_tables = parentEl.getElementsByTagName('table');
+
+            for (var i = -1, il = child_tables.length; ++i < il;) {
+                var this_table = child_tables[i];
+                
+                var anchors = parentEl.getElementsByTagName('a');
+
+                for (var n = -1, nl = anchors.length; ++n < nl;) {
+                    var e = anchors[n];
+                	
+	                if(e.title) {
+	                    var title = e.title;
+	                    var start_of_list = title.indexOf('<<<<');
+	                    if(start_of_list > -1) {
+	                        start_of_list = start_of_list + 4; // offset to the end of the chevrons.
+	                        var end_of_list = title.indexOf('>>>>');
+	                        var class_list = title.substring(start_of_list, end_of_list);
+	
+	                        var c = e.getAttribute("class");
+	                        c = c+" "+class_list;
+	                        e.className = c;
+	
+	                        // Now change the title back
+	                        var new_title = title.substring(end_of_list+4, title.length);
+	                        e.title = new_title;
+	                    }//if(start_of_list > -1) {
+	                }//if(e.title) {
+                
+                // Our tree might be deeply nested...
+	            postprocess(this_table);
+	                
+                }//for (var n = -1, nl = anchors.length; ++n < nl;) {
+                
+            }//for (var i = -1, il = child_tables.length; ++i < il;) {
+        }
 
         function tree_traversal(node){
             if(node.hasChildren){
@@ -53,10 +108,14 @@ M.block_ual_mymoodle.init_tree = function(Y, expand_all, htmlid, current_url) {
                 }
             }
         }
+        
+        // Preprocess elements before the tree is constructed
+        var parentEl = document.getElementById(htmlid);
+        preprocess(parentEl);
 
         // Construct the tree
         var tree = new YAHOO.widget.TreeView(htmlid);
-
+        
         // Now the tree has been constructed traverse it to correct duff HTML...
         var root = tree.getRoot();
         if(root) {
@@ -66,6 +125,10 @@ M.block_ual_mymoodle.init_tree = function(Y, expand_all, htmlid, current_url) {
         // The tree is not created in the DOM until this method is called:
         tree.render();
 
+        // Post process the rendered tree
+        document.getElementById(htmlid); // Obtain the parent element again as the DOM will have been restructured
+        postprocess(parentEl);
+        
         // Move focus to the current node...
         if(current_node) {
             current_node.focus();
