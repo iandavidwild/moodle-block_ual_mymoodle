@@ -16,17 +16,32 @@
 
 
 /**
- * Keeps track of the version number
+ * Capabilities file
  *
  * @package    block
  * @subpackage ual_mymoodle
- * @copyright  2012 University of London Computer Centre
- * @author     Ian Wild {@link http://moodle.org/user/view.php?id=325899}
+ * @copyright  2012-2013 University of London Computer Centre
+ * @author     Ian Wild {@link http://moodle.org/user/view.php?id=81450}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$plugin->version = 2013022603;
-$plugin->maturity = MATURITY_ALPHA;
-$plugin->requires = 2011070100; // 2.1.
-$plugin->component = 'block_ual_mymoodle';
-$plugin->release = '0.2 (Build: 2013026003)';
+$capabilities = array(
+
+    'block/ual_mymoodle:can_edit' => array(
+        'riskbitmask'  => RISK_CONFIG,
+        'captype'      => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes'   => array(
+            'manager'          => CAP_ALLOW
+        )
+    ),
+		
+	'block/ual_mymoodle:show_hidden_courses' => array(
+		'riskbitmask'  => RISK_PERSONAL,
+		'captype'      => 'write',
+		'contextlevel' => CONTEXT_SYSTEM,
+		'archetypes'   => array(
+			'manager'          => CAP_ALLOW
+		)
+	)
+);

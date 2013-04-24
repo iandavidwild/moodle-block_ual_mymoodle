@@ -25,15 +25,14 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-
 $string['ual_mymoodle']         = 'My UAL Moodle';
 $string['pluginname']           = 'My UAL Moodle';
 $string['nocourses']            = 'Nothing to display';
 
 // 'Configuring a My UAL Moodle block' form strings
-
 $string['title']                = 'Title';
 $string['showcode']             = 'Show course code';
+$string['showmoodlecourses']    = 'Show orphaned courses';
 $string['trimmodeleft']         = 'Trim characters from the left';
 $string['trimmoderight']        = 'Trim characters from the right';
 $string['trimmodecentre']       = 'Trim characters from the centre';
@@ -41,9 +40,13 @@ $string['trimmode']             = 'Trim mode';
 $string['trimlength']           = 'How many characters to trim to';
 
 // Tree display
-
 $string['year']                 = 'Year';
 $string['unknown_year']         = 'not known';
+
+// User capabilities
+$string['ual_mymoodle:can_edit']= 'Can edit';
+$string['ual_mymoodle:show_hidden_courses'] = 'Show hidden courses';
+
 
 
 
