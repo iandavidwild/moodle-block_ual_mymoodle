@@ -126,7 +126,7 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
                 $node_type = $node->get_type();
                 // Is this course visible?
                 $visible = $node->get_visible();
-                // Is this a top level (a.k.a 'primary item') link?
+                // Is this a top level (a.k.a 'primary item') link? A primary item could be a programme, course or unit.
                 $display_top_level = false;
                 // Is this a heading (i.e. displayed in bold)?
                 $display_heading = false;
@@ -174,33 +174,28 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
                     $li_attributes['class'] .= ' expanded';
                 }
                 
+                if($display_heading == true) {
+                    $li_attributes['class'] .= ' heading';
+                }
+                
+                if($display_top_level == true) {
+                    $li_attributes['class'] .= ' top_level';
+                }
+                
                 if($visible == true || $this->showhiddencourses) {    
-                    // Construct the content...
-                    $content = html_writer::tag('div', $course_fullname);
-
+                    // Contruct the content...
+                    
                     if($display_link == true) {
-                        // Create a link if the user is enrolled on the course (which they should be if the enrolment plugin is working as it should).
+                        // Create a link if the user is enrolled on the course (which they should be if the enrolment plugins are working as they should).
                         if($node->get_user_enrolled() == true) {
                             $moodle_url = $CFG->wwwroot.'/course/view.php?id='.$node->get_moodle_course_id();
                             // replace the content...
                             $content = html_writer::link($moodle_url, $course_fullname, array('title'=>$course_fullname));
                         } else {
                             // Display the name but it's not clickable...
-                            $content = html_writer::tag('i', $content);
+                            //$content = html_writer::tag('div', $content);
+                            $content = html_writer::link('#', $course_fullname, $li_attributes);
                         }
-                    }
-
-                    if($display_heading == true) {
-                        $content = html_writer::tag('strong', $content);
-                    }
-
-                    // A primary item could be a programme, course or unit
-                    if($indent == 0) {
-                        $display_top_level = true;
-                    }
-
-                    if($display_top_level == true) {
-                        $content = html_writer::tag('h2', $content);
                     }
 
                     if($display_events == true) {
