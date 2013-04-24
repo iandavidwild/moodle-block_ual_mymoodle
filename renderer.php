@@ -162,24 +162,38 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
                 $content = '';  // Start with empty content
 
                 // default content is the course name with no other formatting
-                $li_attributes = array('class' => $type_class);
-                
+                $a_attributes = array('class' => $type_class);
+                $li_attributes = array();
+
+                // construct a list of class names for the
+                $element_class = array();
+                $anchor_class = array();
+
                 // is the node hidden?
                 if($visible == false) {
-                	$li_attributes['class'] .= ' hidden';
+                    $anchor_class[] = 'hidden';
                 }
                 
                 // is the node collapsed or expanded?
                 if($display_expanded) {
-                    $li_attributes['class'] .= ' expanded';
+                    $element_class[] = 'expanded';
                 }
                 
                 if($display_heading == true) {
-                    $li_attributes['class'] .= ' heading';
+                    $anchor_class[] = 'heading';
                 }
                 
                 if($display_top_level == true) {
-                    $li_attributes['class'] .= ' top_level';
+                    $anchor_class[] = 'top_level';
+                }
+
+                if(!empty($element_class)) {
+                    $li_attributes = array('class' => implode(' ', $element_class));
+                }
+
+                if(!empty($anchor_class)) {
+                    $a_attributes['class'] .= ' ';
+                    $a_attributes['class'] .= implode(' ', $anchor_class);
                 }
                 
                 if($visible == true || $this->showhiddencourses) {    
@@ -190,11 +204,12 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
                         if($node->get_user_enrolled() == true) {
                             $moodle_url = $CFG->wwwroot.'/course/view.php?id='.$node->get_moodle_course_id();
                             // replace the content...
-                            $content = html_writer::link($moodle_url, $course_fullname, array('title'=>$course_fullname));
+                            $a_attributes['title'] = $course_fullname;
+                            $content = html_writer::link($moodle_url, $course_fullname, $a_attributes);
                         } else {
                             // Display the name but it's not clickable...
                             //$content = html_writer::tag('div', $content);
-                            $content = html_writer::link('#', $course_fullname, $li_attributes);
+                            $content = html_writer::link('#', $course_fullname, $a_attributes);
                         }
                     }
 
