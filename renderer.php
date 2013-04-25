@@ -29,6 +29,7 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 
 require_once($CFG->dirroot . '/blocks/ual_mymoodle/lib.php');
+require_once($CFG->dirroot . '/local/ual_api/lib.php');
 
 class block_ual_mymoodle_renderer extends plugin_renderer_base {
 
@@ -43,12 +44,13 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
      * Prints course hierarchy view
      * @return string
      */
-    public function course_hierarchy($showcode, $trimmode, $trimlength, $showmoodlecourses, $showhiddencourses, $courseid) {
+    public function course_hierarchy($showcode, $trimmode, $trimlength, $showmoodlecourses, $showhiddencoursesstudents, $showhiddencoursesstaff, $courseid) {
         $this->showcode = $showcode;
         $this->showmoodlecourses = $showmoodlecourses;
         $this->trimmode = $trimmode;
         $this->trimlength = $trimlength;
-        $this->showhiddencourses = $showhiddencourses;
+        $this->showhiddencoursesstudents = $showhiddencoursesstudents;
+        $this->showhiddencoursesstaff = $showhiddencoursesstaff;
         $this->courseid = $courseid;
 
         return $this->render(new course_hierarchy);
@@ -108,10 +110,13 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
      * @param int $indent
      * @return string
      */
-    protected function htmllize_tree($tree, $indent=0) {
-        global $CFG;
+    protected function htmllize_tree($tree, $indent=0, $render_ul = true) {
+        global $CFG, $USER;
 
-        $result = html_writer::start_tag('ul');
+        $result = '';
+        
+        // We use a latche to indicate whether or not we have rendered the UL tag 
+        $rendered_start_ul = false;
 
         if (!empty($tree)) {
             foreach ($tree as $node) {
@@ -126,6 +131,8 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
                 $node_type = $node->get_type();
                 // Is this course visible?
                 $visible = $node->get_visible();
+                // By default we *do* show hidden courses - to avoid confusion if your role hasn't been specified in the MIS
+                $showhiddencourses = true;
                 // Is this a top level (a.k.a 'primary item') link? A primary item could be a programme, course or unit.
                 $display_top_level = false;
                 // Is this a heading (i.e. displayed in bold)?
@@ -163,6 +170,8 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
 
                 // default content is the course name with no other formatting
                 $a_attributes = array('class' => $type_class);
+                $a_attributes['class'] .= ' indent'.$indent;
+                
                 $li_attributes = array();
 
                 // construct a list of class names for the
@@ -172,6 +181,15 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
                 // is the node hidden?
                 if($visible == false) {
                     $anchor_class[] = 'hidden';
+                    
+                    $ual_api = ual_api::getInstance();
+                    if(isset($ual_api)) {
+                        $role = $ual_api->get_user_role($USER->username);
+                    
+                        if($role) {
+                            $showhiddencourses = (((strcmp($role, 'STAFF') == 0) && $this->showhiddencoursesstaff) || ((strcmp($role, 'STUDENT') == 0) && $this->showhiddencoursesstudents));
+                        }
+                    }
                 }
                 
                 // is the node collapsed or expanded?
@@ -196,7 +214,7 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
                     $a_attributes['class'] .= implode(' ', $anchor_class);
                 }
                 
-                if($visible == true || $this->showhiddencourses) {    
+                if($visible == true || $showhiddencourses) {    
                     // Contruct the content...
                     
                     if($display_link == true) {
@@ -208,9 +226,11 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
                             $content = html_writer::link($moodle_url, $course_fullname, $a_attributes);
                         } else {
                             // Display the name but it's not clickable...
-                            //$content = html_writer::tag('div', $content);
                             $content = html_writer::link('#', $course_fullname, $a_attributes);
                         }
+                    } else {
+                        // Display the name but it's not clickable...
+                        $content = html_writer::link('#', $course_fullname, $a_attributes);
                     }
 
                     if($display_events == true) {
@@ -232,19 +252,43 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
                         }
                     }
                 }
-
+                if($render_ul && !$rendered_start_ul) {
+                    $result .= html_writer::start_tag('ul');
+                    $rendered_start_ul = true;
+                }
+                
                 $children = $node->get_children();
 
-                if ($children == null) {
-                    $result .= html_writer::tag('li', $content, $li_attributes);
+                if($content != '') {
+                   
+                    
+                    if ($children == null) {
+                        
+                        $result .= html_writer::tag('li', $content, $li_attributes);
+                        
+                    } else { 
+                        // TODO: If this has parents OR it doesn't have parents or children then we need to display it...???
+
+                        // Increase the indent when we recurse...
+                        $result .= html_writer::tag('li', $content.$this->htmllize_tree($children, $indent+1), $li_attributes);
+                    }
+                    
+                    
                 } else {
-                    // If this has parents OR it doesn't have parents or children then we need to display it...???
-                    $result .= html_writer::tag('li', $content.$this->htmllize_tree($children, $indent+1), $li_attributes);
+                    if ($children != null) {
+                        // Don't increase the indent as we haven't actually displayed anything...
+                        $result .= $this->htmllize_tree($children, $indent, false);
+                    }
                 }
+            }//foreach ($tree as $node) {
+            if($rendered_start_ul) {
+                $result .= html_writer::end_tag('ul');
+               
             }
         }
-        $result .= html_writer::end_tag('ul');
 
+        
+        
         return $result;
     }
 
