@@ -234,6 +234,7 @@ class course_hierarchy implements renderable {
                         $new_course->set_fullname($moodle_course->fullname);
                         $mis = ual_api::getInstance();
                         $new_course->set_user_enrolled($mis->get_enrolled($USER->id, $moodle_course->id));
+                        $new_course->set_visible($moodle_course->visible);
                     }
 
                     foreach($courses as $course) {

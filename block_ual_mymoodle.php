@@ -119,7 +119,9 @@ class block_ual_mymoodle extends block_base {
         }
         
         $context = get_context_instance(CONTEXT_SYSTEM);
-        $showhiddencourses = has_capability('block/ual_mymoodle:show_hidden_courses', $context);
+        
+        $showhiddencoursesstudents = has_capability('block/ual_mymoodle:show_hidden_courses_students', $context);
+        $showhiddencoursesstaff = has_capability('block/ual_mymoodle:show_hidden_courses_staff', $context);
 
         // Load userdefined title and make sure it's never empty.
         if (empty($this->config->title)) {
@@ -144,7 +146,13 @@ class block_ual_mymoodle extends block_base {
                 $courseid = 1;  // Assume we are on the site front page
             }
 
-            $this->content->text = $renderer->course_hierarchy($showcode, $trimmode, $trimlength, $showmoodlecourses, $showhiddencourses, $courseid);
+            $this->content->text = $renderer->course_hierarchy( $showcode, 
+                                                                $trimmode, 
+                                                                $trimlength, 
+                                                                $showmoodlecourses, 
+                                                                $showhiddencoursesstudents,
+                                                                $showhiddencoursesstaff, 
+                                                                $courseid);
             $this->content->footer = '';
 
         }
