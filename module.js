@@ -14,11 +14,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Javascript for the Course Level block
+ * Javascript for the UAL My Moodle block
  *
  * @package    block
- * @subpackage course_level
- * @copyright  2012 University of London Computer Centre
+ * @subpackage ual_mymoodle
+ * @copyright  2012-13 University of London Computer Centre
  * @author     Ian Wild {@link http://moodle.org/user/view.php?id=325899}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -121,7 +121,17 @@ M.block_ual_mymoodle.init_tree = function(Y, expand_all, htmlid, current_url) {
                 }
             }
         }
-        
+
+        function onClickEvent(oArgs) {
+            var node = oArgs.node;
+
+            if(node.expanded) {
+                node.collapse();
+            } else {
+                node.expand();
+            }
+        }
+
         // Preprocess elements before the tree is constructed
         var parentEl = document.getElementById(htmlid);
         preprocess(parentEl);
@@ -136,6 +146,8 @@ M.block_ual_mymoodle.init_tree = function(Y, expand_all, htmlid, current_url) {
 
             postprocess(el);
         });
+
+        tree.subscribe("clickEvent", onClickEvent);
 
         var root = tree.getRoot();
 
