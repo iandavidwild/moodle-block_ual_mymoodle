@@ -137,8 +137,6 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
                 $display_top_level = false;
                 // Is this a heading (i.e. displayed in bold)?
                 $display_heading = false;
-                // Should we display a link to the course?
-                $display_link = $visible;
                 // Do we display the events belonging to a course?
                 $display_events = false;
                 // Is the node expanded or collapsed when the tree is first rendered
@@ -213,7 +211,10 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
                     $a_attributes['class'] .= ' ';
                     $a_attributes['class'] .= implode(' ', $anchor_class);
                 }
-                
+
+                // Should we display a link to the course?
+                $display_link = ($visible || $showhiddencourses);
+
                 if($visible == true || $showhiddencourses) {    
                     // Contruct the content...
                     
