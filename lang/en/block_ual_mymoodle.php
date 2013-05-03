@@ -45,9 +45,11 @@ $string['default_admin_tool_url'] = 'http://w01.ual01test.wf.ulcc.ac.uk/ual_admi
 $string['year']                 = 'Year';
 $string['unknown_year']         = 'not known';
 
-// User capabilities
-$string['ual_mymoodle:can_edit']= 'Can edit';
-$string['ual_mymoodle:can_move']= 'Can move';
+// Capabilities
+
+$string['ual_mymoodle:admin_db_link'] = 'Display Admin DB Tool Link';
+
+$string['admin_tool_link']      = 'Open AdminDB';
 
 
 
