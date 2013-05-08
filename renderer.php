@@ -29,6 +29,7 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 
 require_once($CFG->dirroot . '/blocks/ual_mymoodle/lib.php');
+require_once($CFG->dirroot . '/local/ual_api/lib.php');
 
 class block_ual_mymoodle_renderer extends plugin_renderer_base {
 
@@ -70,18 +71,25 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
         $context = get_context_instance(CONTEXT_SYSTEM);
         $display_link = has_capability('block/ual_mymoodle:admin_db_link', $context);
 
+        // Is ual_mis class loaded?
+        $mis = new ual_mis();
+        // What is this user's role, according to the MIS?
+        $ual_user_role = $mis->get_user_role($USER->username);
+
         $html = ""; // Start with an empty string.
 
         if($display_link) {
-            $button_text = get_string('admin_tool_link', 'block_ual_mymoodle');
-            $redirect_url = $this->admin_tool_url;
+            if(strcmp($ual_user_role, 'STAFF') == 0) {
+                $button_text = get_string('admin_tool_link', 'block_ual_mymoodle');
+                $redirect_url = $this->admin_tool_url;
 
-            $html .="<div class='singlebutton'><form action='{$redirect_url}' method='post'>
-                        <input type='hidden' name='url' value='{$this->admin_tool_url}'/>
-                        <input type='hidden' name='username' value='{$USER->username}'/>
-                        <input type='hidden' name='magic' value='{$this->admin_tool_magic_text}'/>
-                        <input type='submit' value='{$button_text}'/>
-                    </form></div>";
+                $html .="<div class='singlebutton'><form action='{$redirect_url}' method='post'>
+                            <input type='hidden' name='url' value='{$this->admin_tool_url}'/>
+                            <input type='hidden' name='username' value='{$USER->username}'/>
+                            <input type='hidden' name='magic' value='{$this->admin_tool_magic_text}'/>
+                            <input type='submit' value='{$button_text}'/>
+                        </form></div>";
+            }
         }
 
         $displayed_something = false;
