@@ -37,18 +37,21 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
     private $trimmode = block_ual_mymoodle::TRIM_RIGHT;
     private $trimlength = 50;
     private $admin_tool_url = '';
+    private $admin_tool_magic_text = '';
     private $showhiddencourses = true;
 
     /**
      * Prints course hierarchy view
      * @return string
      */
-    public function course_hierarchy($showcode, $trimmode, $trimlength, $showmoodlecourses, $admin_tool_url, $showhiddencourses) {
+    public function course_hierarchy($showcode, $trimmode, $trimlength, $showmoodlecourses, $admin_tool_url, $admin_tool_magic_text, $showhiddencourses) {
         $this->showcode = $showcode;
         $this->showmoodlecourses = $showmoodlecourses;
         $this->trimmode = $trimmode;
         $this->trimlength = $trimlength;
         $this->admin_tool_url = $admin_tool_url;
+        $this->admin_tool_magic_text = $admin_tool_magic_text;
+
         $this->showhiddencourses = $showhiddencourses;
 
         return $this->render(new course_hierarchy);
@@ -76,7 +79,7 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
             $html .="<div class='singlebutton'><form action='{$redirect_url}' method='post'>
                         <input type='hidden' name='url' value='{$this->admin_tool_url}'/>
                         <input type='hidden' name='username' value='{$USER->username}'/>
-                        <input type='hidden' name='magic' value='qazmagicwsx123'/>
+                        <input type='hidden' name='magic' value='{$this->admin_tool_magic_text}'/>
                         <input type='submit' value='{$button_text}'/>
                     </form></div>";
         }
