@@ -50,6 +50,6 @@ $string['unknown_year']         = 'not known';
 $string['ual_mymoodle:admin_db_link'] = 'Display Admin DB Tool Link';
 
 $string['admin_tool_link']      = 'Open AdminDB';
-
+$string['ual_mymoodle:show_hidden_courses'] = 'Show hidden courses';
 
 
