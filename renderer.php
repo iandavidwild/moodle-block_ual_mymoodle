@@ -189,10 +189,11 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
                 }
 
                 $content = '';  // Start with empty content
-
+                $attributes = array('class' => $type_class);
+                
                 if($visible == true) {
                     // default content is the course name with no other formatting
-                    $attributes = array('class' => $type_class);
+
                     // Construct the content...
                     $moodle_url = $CFG->wwwroot.'#';
                     $content = html_writer::link($moodle_url, $course_fullname, $attributes);
