@@ -137,6 +137,7 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
 
                 // What type of node is this?
                 $node_type = $node->get_type();
+
                 // Is this course visible?
                 $visible = $node->get_visible();
                 if(!$visible) {
@@ -165,6 +166,10 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
                     case ual_course::COURSETYPE_COURSE:
                         $display_events = true;
                         $type_class = 'course';
+                        if(!$visible) {
+                            $visible = true;
+                            $display_link = false;
+                        }
                         break;
                     case ual_course::COURSETYPE_UNIT:
                         $display_events = true;
@@ -178,7 +183,8 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
                     // default content is the course name with no other formatting
                     $attributes = array('class' => $type_class);
                     // Construct the content...
-                    $content = html_writer::tag('div', $course_fullname, $attributes);
+                    $moodle_url = $CFG->wwwroot.'#';
+                    $content = html_writer::link($moodle_url, $course_fullname, $attributes);
 
                     if($display_link == true) {
                         // Create a link if the user is enrolled on the course (which they should be if the enrolment plugin is working as it should).
