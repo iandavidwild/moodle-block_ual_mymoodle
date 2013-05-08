@@ -48,8 +48,15 @@ $string['unknown_year']         = 'not known';
 // Capabilities
 
 $string['ual_mymoodle:admin_db_link'] = 'Display Admin DB Tool Link';
-
-$string['admin_tool_link']      = 'Open AdminDB';
 $string['ual_mymoodle:show_hidden_courses'] = 'Show hidden courses';
+
+// Admin Tool link:
+$string['default_admin_tool_url'] = 'http://w01.ual01test.wf.ulcc.ac.uk/ual_admintool/login.php';
+$string['admin_tool_url']        = 'Admin tool URL';
+$string['admin_tool_link']       = 'Open admin tool';
+$string['admin_tool_magic']      = 'Admin tool magic text';
+$string['default_admin_tool_magic'] = 'qazmagicwsx123';
+
+
 
 
