@@ -102,9 +102,9 @@ class block_ual_mymoodle extends block_base {
             $showcode = (int)$this->config->showcode;
         }
 
-        if (!empty($this->config->admin_tool_url)) {
-            $admin_tool_url = $this->config->admin_tool_url;
-        }
+        // Access to Admin Tool is set globally
+        $admin_tool_url = get_config('block_ual_mymoodle', 'admin_tool_url');
+        $admin_tool_magic_text  = get_config('block_ual_mymoodle', 'admin_tool_magic_text');
 
         if (!empty($this->config->showmoodlecourses)) {
             $showmoodlecourses = (int)$this->config->showmoodlecourses;
