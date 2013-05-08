@@ -139,7 +139,7 @@ class block_ual_mymoodle extends block_base {
 
             $renderer = $this->page->get_renderer('block_ual_mymoodle');
 
-            $this->content->text = $renderer->course_hierarchy($showcode, $trimmode, $trimlength, $showmoodlecourses, $admin_tool_url, $showhiddencourses);
+            $this->content->text = $renderer->course_hierarchy($showcode, $trimmode, $trimlength, $showmoodlecourses, $admin_tool_url, $admin_tool_magic_text, $showhiddencourses);
             $this->content->footer = '';
 
         }
