@@ -139,6 +139,9 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
                 $node_type = $node->get_type();
                 // Is this course visible?
                 $visible = $node->get_visible();
+                if(!$visible) {
+                    $visible = $this->showhiddencourses;
+                }
                 // Is this a top level (a.k.a 'primary item') link?
                 $display_top_level = false;
                 // Is this a heading (i.e. displayed in bold)?
