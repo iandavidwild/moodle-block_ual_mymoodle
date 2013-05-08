@@ -34,5 +34,14 @@ $capabilities = array(
         'archetypes'   => array(
             'manager'          => CAP_ALLOW
         )
+    ),
+
+    'block/ual_mymoodle:show_hidden_courses' => array(
+    'riskbitmask'  => RISK_PERSONAL,
+    'captype'      => 'write',
+    'contextlevel' => CONTEXT_SYSTEM,
+    'archetypes'   => array(
+        'manager'          => CAP_ALLOW
     )
+)
 );
