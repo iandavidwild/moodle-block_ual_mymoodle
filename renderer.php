@@ -206,8 +206,8 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
                             // replace the content...
                             $content = html_writer::link($moodle_url, $course_fullname, $attributes);
                         } else {
-                            // Display the name but it's not clickable...
-                            $content = html_writer::tag('i', $content);
+                            // Don't display any content
+                            $content = '';
                         }
                     }
 
