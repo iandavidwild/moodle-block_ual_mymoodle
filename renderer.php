@@ -40,12 +40,13 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
     private $admin_tool_url = '';
     private $admin_tool_magic_text = '';
     private $showhiddencourses = true;
+    private $courseid = 0;
 
     /**
      * Prints course hierarchy view
      * @return string
      */
-    public function course_hierarchy($showcode, $trimmode, $trimlength, $showmoodlecourses, $admin_tool_url, $admin_tool_magic_text, $showhiddencourses) {
+    public function course_hierarchy($showcode, $trimmode, $trimlength, $showmoodlecourses, $admin_tool_url, $admin_tool_magic_text, $showhiddencourses, $courseid) {
         $this->showcode = $showcode;
         $this->showmoodlecourses = $showmoodlecourses;
         $this->trimmode = $trimmode;
@@ -54,6 +55,7 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
         $this->admin_tool_magic_text = $admin_tool_magic_text;
 
         $this->showhiddencourses = $showhiddencourses;
+        $this->courseid = $courseid;
 
         return $this->render(new course_hierarchy);
     }
@@ -95,10 +97,13 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
         $displayed_something = false;
 
         if (!empty($tree->courses) ) {
+
             $htmlid = 'course_hierarchy_'.uniqid();
-            $html .= '<div id="'.$htmlid.'">';
+            $this->page->requires->js_init_call('M.block_ual_mymoodle.init_tree', array(false, $htmlid, $CFG->wwwroot.'/course/view.php?id='.$this->courseid));
+
+            $html .= html_writer::start_tag('div', array('id' => $htmlid));
             $html .= $this->htmllize_tree($tree->courses);
-            $html .= '</div>';
+            $html .= html_writer::end_tag('div');
 
             $displayed_something = true;
         }
@@ -195,7 +200,7 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
                     // default content is the course name with no other formatting
 
                     // Construct the content...
-                    $moodle_url = $CFG->wwwroot.'#';
+                    $moodle_url = '#';
                     $content = html_writer::link($moodle_url, $course_fullname, $attributes);
 
                     if($display_link == true) {
